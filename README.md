@@ -1,8 +1,6 @@
-# Sequel::Rake::Migrations
+ # Sequel::Rake::Migrations
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/sequel/rake/migrations`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+Migration Rake tasks for [Sequel](http://sequel.jeremyevans.net/).
 
 ## Installation
 
@@ -16,13 +14,37 @@ And then execute:
 
     $ bundle
 
-Or install it yourself as:
+Require the tasks at the top of your Rakefile
 
-    $ gem install sequel-rake-migrations
+```ruby
+require "sequel/rake/migrations/tasks"
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+Sequel is loaded with DATABASE_URL and TEST_DATABASE_URL environment variables. `ENV["APP_ENV"]` is used to determine current environment ([sinatra#984](https://github.com/sinatra/sinatra/pull/984)).
+
+```ruby
+DB = Sequel.connect(ENV["APP_ENV"] == "test" ? ENV["TEST_DATABASE_URL"] : ENV["DATABASE_URL"])
+```
+
+### Available Rake Tasks
+
+```sh
+# Create dev + test databases
+$ bin/rake db:create
+
+# Create a migration
+$ bin/rake db:create_migration["create_accounts"]
+
+# Run migrations
+$ bin/rake db:migrate
+$ bin/rake db:migrate APP_ENV=test
+
+# Rollback
+$ bin/rake db:rollback
+$ bin/rake db:rollback APP_ENV=test
+```
 
 ## Development
 
@@ -32,7 +54,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/sequel-rake-migrations.
+Bug reports and pull requests are welcome on GitHub at https://github.com/dawsonandrews/sequel-rake-migrations.
 
 ## License
 
