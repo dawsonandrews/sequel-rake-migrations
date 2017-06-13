@@ -1,4 +1,5 @@
 require "fileutils"
+require "dotenv"
 
 namespace :db do
   task :environment do
