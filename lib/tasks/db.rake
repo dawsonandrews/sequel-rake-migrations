@@ -1,21 +1,18 @@
-# rubocop:disable Metrics/BlockLength
+require "fileutils"
+
 namespace :db do
   task :environment do
-    # Default ENV to dev if not present
     ENV["APP_ENV"] ||= "development"
 
-    # Autoload gems from the Gemfile
     require "bundler"
     Bundler.require :default, ENV["APP_ENV"].to_sym
 
-    # Load dev env vars
     Dotenv.load if %w[development test].include? ENV["APP_ENV"]
   end
 
   task connect_db: :environment do
-    require "da/core"
-    require "da/db"
-
+    DB = Sequel.connect(ENV["APP_ENV"] == "test" ? ENV["TEST_DATABASE_URL"] : ENV["DATABASE_URL"])
+    DB.extension :pg_array, :pg_json
     Sequel.extension :migration
   end
 
@@ -78,6 +75,7 @@ namespace :db do
 
     timestamp = DateTime.now.strftime("%Y%m%d%H%M%S")
     migrations_dir = File.join(t.application.original_dir, "db", "migrations")
+    FileUtils.mkdir_p(migrations_dir)
     path = "#{migrations_dir}/#{timestamp}_#{args[:name]}.rb"
 
     File.open("#{@root_dir}/#{path}", "w") do |f|
